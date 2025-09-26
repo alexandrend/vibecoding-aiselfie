@@ -1,0 +1,7 @@
+{
+  "name": "AI Selfie Stylizer",
+  "description": "An application that allows users to upload a selfie, choose a creative style, and use AI to generate a new, stylized version of their image. Users can then download the generated artwork.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
