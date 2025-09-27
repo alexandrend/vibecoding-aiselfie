@@ -33,8 +33,8 @@ const IconCamera = () => (
 
 const Loader = () => (
   <div className="flex flex-col items-center justify-center space-y-4">
-    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-cyan-400"></div>
-    <p className="text-lg text-cyan-200">Stylizing your masterpiece...</p>
+    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-fuchsia-400"></div>
+    <p className="text-lg text-fuchsia-200">Traveling through time...</p>
   </div>
 );
 
@@ -110,7 +110,7 @@ const CameraView: React.FC<{
            <button onClick={onCancel} className="px-6 py-3 rounded-full bg-gray-700/80 text-white font-semibold hover:bg-gray-600 transition-colors">
             Cancel
           </button>
-          <button onClick={handleTakePhoto} className="p-4 rounded-full bg-cyan-500/90 text-white group ring-4 ring-white/30 hover:ring-white/50 transition-all" aria-label="Take Photo">
+          <button onClick={handleTakePhoto} className="p-4 rounded-full bg-fuchsia-500/90 text-white group ring-4 ring-white/30 hover:ring-white/50 transition-all" aria-label="Take Photo">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -143,6 +143,7 @@ export default function App() {
       setOriginalImageFile(file);
       setGeneratedImage(null);
       setError(null);
+      setSelectedStyleId(null);
     }
   };
 
@@ -150,22 +151,24 @@ export default function App() {
     setOriginalImageFile(file);
     setGeneratedImage(null);
     setError(null);
+    setSelectedStyleId(null);
     setIsCameraOpen(false);
   };
 
-  const handleGenerateClick = useCallback(async () => {
-    if (!originalImageFile || !selectedStyleId) {
-      setError("Please upload an image and select a style first.");
+  const handleStyleAndGenerate = useCallback(async (styleId: string) => {
+    if (!originalImageFile) {
+      setError("Please upload an image before selecting a style.");
       return;
     }
 
+    setSelectedStyleId(styleId);
     setIsLoading(true);
     setError(null);
     setGeneratedImage(null);
 
     try {
       const base64Image = await fileToBase64(originalImageFile);
-      const style = STYLE_OPTIONS.find(s => s.id === selectedStyleId);
+      const style = STYLE_OPTIONS.find(s => s.id === styleId);
       if (!style) throw new Error("Selected style not found.");
       
       const newImageBase64 = await applyStyleToImage(base64Image, originalImageFile.type, style.prompt);
@@ -180,7 +183,7 @@ export default function App() {
     } finally {
       setIsLoading(false);
     }
-  }, [originalImageFile, selectedStyleId]);
+  }, [originalImageFile]);
   
   const handleDownloadClick = () => {
     if (!generatedImage) return;
@@ -193,32 +196,30 @@ export default function App() {
     document.body.removeChild(link);
   };
 
-  const isGenerateDisabled = !originalImageFile || !selectedStyleId || isLoading;
-
   return (
     <div className="min-h-screen bg-gray-900 text-gray-200 font-sans p-4 sm:p-6 lg:p-8">
        {isCameraOpen && <CameraView onCapture={handleCapture} onCancel={() => setIsCameraOpen(false)} />}
       <div className="container mx-auto max-w-6xl">
         <header className="text-center mb-8">
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-500">
-            AI Selfie Stylizer
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-500 to-purple-500">
+            Time Machine
           </h1>
-          <p className="mt-2 text-lg text-gray-400">Turn your photos into works of art with a single click.</p>
+          <p className="mt-2 text-lg text-gray-400">Travel through the decades and see your selfie reimagined.</p>
         </header>
 
         <main className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* --- Controls Panel --- */}
           <div className="bg-gray-800/50 p-6 rounded-2xl shadow-lg border border-gray-700 flex flex-col space-y-6">
             <div>
-              <h2 className="text-xl font-bold mb-2 text-cyan-300">1. Choose Your Image</h2>
+              <h2 className="text-xl font-bold mb-2 text-fuchsia-300">1. Upload Your Portrait</h2>
               <label htmlFor="file-upload" className="cursor-pointer group">
-                <div className="border-2 border-dashed border-gray-600 rounded-lg p-4 text-center transition-colors group-hover:border-cyan-500 group-hover:bg-gray-800">
+                <div className="border-2 border-dashed border-gray-600 rounded-lg p-4 text-center transition-colors group-hover:border-fuchsia-500 group-hover:bg-gray-800">
                   {originalImagePreview ? (
                      <img src={originalImagePreview} alt="Uploaded preview" className="max-h-60 mx-auto rounded-md shadow-md" />
                   ) : (
                     <div className="flex flex-col items-center justify-center py-8">
                       <IconUpload />
-                      <p className="mt-2 text-gray-400">Click to upload an image</p>
+                      <p className="mt-2 text-gray-400">Click to upload a portrait</p>
                       <p className="text-xs text-gray-500">PNG, JPG, WEBP</p>
                     </div>
                   )}
@@ -229,7 +230,7 @@ export default function App() {
                 <p className="text-gray-500 text-sm mb-2">OR</p>
                 <button
                   onClick={() => setIsCameraOpen(true)}
-                  className="inline-flex items-center justify-center px-6 py-2 border border-transparent text-base font-medium rounded-md text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-cyan-500 transition-colors"
+                  className="inline-flex items-center justify-center px-6 py-2 border border-transparent text-base font-medium rounded-md text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-fuchsia-500 transition-colors"
                 >
                   <IconCamera />
                   Take a Selfie
@@ -238,15 +239,16 @@ export default function App() {
             </div>
 
             <div>
-              <h2 className="text-xl font-bold mb-3 text-cyan-300">2. Choose Your Style</h2>
+              <h2 className="text-xl font-bold mb-3 text-fuchsia-300">2. Choose Your Decade</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {STYLE_OPTIONS.map((style) => (
                   <button 
                     key={style.id}
-                    onClick={() => setSelectedStyleId(style.id)}
-                    className={`p-3 text-center rounded-lg font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-cyan-400
+                    onClick={() => handleStyleAndGenerate(style.id)}
+                    disabled={isLoading}
+                    className={`p-3 text-center rounded-lg font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-fuchsia-400 disabled:opacity-50 disabled:cursor-not-allowed
                       ${selectedStyleId === style.id 
-                        ? 'bg-cyan-500 text-white shadow-lg scale-105' 
+                        ? 'bg-fuchsia-500 text-white shadow-lg scale-105' 
                         : 'bg-gray-700 hover:bg-gray-600 text-gray-200'
                       }`}
                   >
@@ -254,19 +256,6 @@ export default function App() {
                   </button>
                 ))}
               </div>
-            </div>
-
-            <div>
-              <button
-                onClick={handleGenerateClick}
-                disabled={isGenerateDisabled}
-                className="w-full py-4 text-lg font-bold rounded-lg transition-all duration-300 ease-in-out text-white
-                           bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700
-                           disabled:from-gray-600 disabled:to-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed
-                           focus:outline-none focus:ring-4 focus:ring-cyan-300/50 shadow-lg hover:shadow-cyan-500/30 disabled:shadow-none"
-              >
-                {isLoading ? 'Generating...' : '✨ Stylize My Image'}
-              </button>
             </div>
           </div>
           
@@ -276,13 +265,13 @@ export default function App() {
             {error && !isLoading && <ErrorMessage message={error} />}
             {generatedImage && !isLoading && (
               <div className="text-center w-full">
-                <h2 className="text-2xl font-bold mb-4 text-cyan-300">Your Masterpiece!</h2>
+                <h2 className="text-2xl font-bold mb-4 text-fuchsia-300">Welcome to the Past!</h2>
                 <img src={`data:image/png;base64,${generatedImage}`} alt="Generated styled" className="w-full max-w-md mx-auto rounded-lg shadow-2xl mb-6" />
                 <button
                   onClick={handleDownloadClick}
                   className="w-full max-w-md py-3 text-lg font-bold rounded-lg transition-all duration-300 ease-in-out text-gray-900
-                             bg-gradient-to-r from-cyan-300 to-teal-300 hover:from-cyan-400 hover:to-teal-400
-                             focus:outline-none focus:ring-4 focus:ring-teal-300/50 shadow-lg hover:shadow-teal-400/30"
+                             bg-gradient-to-r from-fuchsia-400 to-purple-500 hover:from-fuchsia-500 hover:to-purple-600
+                             focus:outline-none focus:ring-4 focus:ring-purple-400/50 shadow-lg hover:shadow-purple-500/30"
                 >
                   Download Image
                 </button>
@@ -290,8 +279,8 @@ export default function App() {
             )}
             {!isLoading && !error && !generatedImage && (
               <div className="text-center text-gray-500">
-                <p className="text-lg">Your generated image will appear here.</p>
-                <p>Ready to create some art?</p>
+                <p className="text-lg">Your time-traveled portrait will materialize here.</p>
+                <p>Ready to take a trip?</p>
               </div>
             )}
           </div>

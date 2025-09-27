@@ -13,7 +13,7 @@ export const STYLE_OPTIONS: StyleOption[] = [
   },
   {
     id: 'glamour_shot_80s',
-    name: 'Glamour Shot',
+    name: "Glamorous '80s",
     prompt: "you make people's 80s yearbook photos from their image. Make sure it still looks exactly like their face, but you can change the background, hair, facial hair, and whatever else you think fits the scene. We want that glamour shots vibe (the one from the mall in the 80s), things like mullets, very big and fluffy hair, large glasses, amazing amazing 80s fashion, and of course, that foggy camera and fun backgrounds and soft lighting. NO TEXT should be in the image.",
   },
   {

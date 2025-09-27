@@ -1,6 +1,6 @@
 {
-  "name": "AI Selfie Stylizer",
-  "description": "An application that allows users to upload a selfie, choose a creative style, and use AI to generate a new, stylized version of their image. Users can then download the generated artwork.",
+  "name": "Time Machine",
+  "description": "An application that allows users to see how they would look in different decades by applying a style to their selfie using AI.",
   "requestFramePermissions": [
     "camera"
   ]
